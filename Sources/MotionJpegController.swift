@@ -144,9 +144,41 @@ class MotionJpegController: NSObject {
 
 extension MotionJpegController: URLSessionDataDelegate {
     
-    func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
-        assert(false)
-        print("method 1")
+    open func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
+        
+        if let imageData = receivedData , imageData.length > 0 {
+            if status == .loading {
+                self.hideError(self.errorView)
+                status = .playing
+                DispatchQueue.main.async { self.didFinishLoading?() }
+            }
+            self.newImageData?(imageData as Data)
+        }
+        
+        receivedData = NSMutableData()
+        
+        completionHandler(.allow)
+    }
+    
+    open func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+        receivedData?.append(data)
+    }
+    
+    open func urlSession(_ session: URLSession, task: URLSessionTask, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        
+        var credential: URLCredential?
+        var disposition: Foundation.URLSession.AuthChallengeDisposition = .performDefaultHandling
+        
+        if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust {
+            if let trust = challenge.protectionSpace.serverTrust {
+                credential = URLCredential(trust: trust)
+                disposition = .useCredential
+            }
+        } else if let onAuthentication = authenticationHandler {
+            (disposition, credential) = onAuthentication(challenge)
+        }
+        
+        completionHandler(disposition, credential)
     }
     
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
@@ -186,97 +218,53 @@ extension MotionJpegController: URLSessionDataDelegate {
         }
     }
     
+    func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
+        assert(false)
+    }
+    
     func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
         assert(false)
-        print("method 3")
     }
     
     func urlSession(_ session: URLSession, taskIsWaitingForConnectivity task: URLSessionTask) {
         assert(false)
-        print("method 4")
     }
     
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didBecome streamTask: URLSessionStreamTask) {
         assert(false)
-        print("method 5")
     }
     
 //    func urlSession(_ session: URLSession, task: URLSessionTask, didFinishCollecting metrics: URLSessionTaskMetrics) {
 //        assert(false)
-//        print("method 6")
 //    }
     
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didBecome downloadTask: URLSessionDownloadTask) {
         assert(false)
-        print("method 7")
     }
     
     func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         assert(false)
-        print("method 8")
     }
     
     func urlSession(_ session: URLSession, task: URLSessionTask, needNewBodyStream completionHandler: @escaping (InputStream?) -> Void) {
         assert(false)
-        print("method 9")
     }
     
     @available(iOS 11.0, *)
     func urlSession(_ session: URLSession, task: URLSessionTask, willBeginDelayedRequest request: URLRequest, completionHandler: @escaping (URLSession.DelayedRequestDisposition, URLRequest?) -> Void) {
         assert(false)
-        print("method 10")
     }
     
     func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
         assert(false)
-        print("method 11")
     }
     
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, willCacheResponse proposedResponse: CachedURLResponse, completionHandler: @escaping (CachedURLResponse?) -> Void) {
         assert(false)
-        print("method 12")
     }
     
     func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) {
         assert(false)
-        print("method 13")
-    }
-    
-    open func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
-        
-        if let imageData = receivedData , imageData.length > 0 {
-            if status == .loading {
-                self.hideError(self.errorView)
-                status = .playing
-                DispatchQueue.main.async { self.didFinishLoading?() }
-            }
-            self.newImageData?(imageData as Data)
-        }
-        
-        receivedData = NSMutableData()
-        
-        completionHandler(.allow)
-    }
-    
-    open func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-        receivedData?.append(data)
-    }
-    
-    open func urlSession(_ session: URLSession, task: URLSessionTask, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        
-        var credential: URLCredential?
-        var disposition: Foundation.URLSession.AuthChallengeDisposition = .performDefaultHandling
-        
-        if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust {
-            if let trust = challenge.protectionSpace.serverTrust {
-                credential = URLCredential(trust: trust)
-                disposition = .useCredential
-            }
-        } else if let onAuthentication = authenticationHandler {
-            (disposition, credential) = onAuthentication(challenge)
-        }
-        
-        completionHandler(disposition, credential)
     }
 
 }
