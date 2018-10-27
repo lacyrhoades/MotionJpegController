@@ -10,6 +10,7 @@ import UIKit
 
 class SimpleDemoViewController: UIViewController {
     var streamController: MotionJpegController?
+    var orientation = UIImageOrientation.up
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,9 +25,10 @@ class SimpleDemoViewController: UIViewController {
         })
         
         self.streamController?.newImageData = { imageData in
-            if let latestImage = UIImage(data: imageData as Data) {                
+            if let latestImage = UIImage(data: imageData)?.cgImage {
+                let rotated = UIImage.init(cgImage: latestImage, scale: 1.0, orientation: self.orientation)
                 DispatchQueue.main.async {
-                    imageView.image = latestImage
+                    imageView.image = rotated
                 }
             }
         }

@@ -23,8 +23,28 @@ class ViewController: UITableViewController {
                 let vc = SimpleDemoViewController()
                 self.navigationController?.pushViewController(vc, animated: true)
             }),
+            Row(title: "DSLR live view (portrait right)", action: {
+                let vc = SimpleDemoViewController()
+                vc.orientation = .right
+                self.navigationController?.pushViewController(vc, animated: true)
+            }),
+            Row(title: "DSLR live view (portrait left)", action: {
+                let vc = SimpleDemoViewController()
+                vc.orientation = .left
+                self.navigationController?.pushViewController(vc, animated: true)
+            }),
             Row(title: "DSLR through GPUImage filters", action: {
                 let vc = GPUImageDemoViewController()
+                self.navigationController?.pushViewController(vc, animated: true)
+            }),
+            Row(title: "DSLR through GPUImage filters (portrait left)", action: {
+                let vc = GPUImageDemoViewController()
+                vc.orientation = .left
+                self.navigationController?.pushViewController(vc, animated: true)
+            }),
+            Row(title: "DSLR through GPUImage filters (portrait right)", action: {
+                let vc = GPUImageDemoViewController()
+                vc.orientation = .right
                 self.navigationController?.pushViewController(vc, animated: true)
             })
         ]
