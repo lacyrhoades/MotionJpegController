@@ -58,7 +58,7 @@ class GPUImageDemoViewController: UIViewController {
         }
         
         let timer = Timer(timeInterval: 2.0, repeats: true, block: { (timer) in
-            DispatchQueue.main.async {
+            GPUImageContext.sharedContextQueue().async {
                 buildFilterChain()
             }
         })
