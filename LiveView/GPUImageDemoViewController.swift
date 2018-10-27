@@ -52,12 +52,14 @@ class GPUImageDemoViewController: UIViewController {
         
         self.streamController?.newImageData = { imageData in
             if let latestImage = UIImage(data: imageData) {
-                gpuAdapter.update(latestImage)
-                gpuAdapter.notifyTargetsAboutNewOutputTexture()
+                GPUImageContext.sharedContextQueue().async {
+                    gpuAdapter.update(latestImage)
+                    gpuAdapter.notifyTargetsAboutNewOutputTexture()
+                }
             }
         }
         
-        let timer = Timer(timeInterval: 2.0, repeats: true, block: { (timer) in
+        let timer = Timer(timeInterval: 0.5, repeats: true, block: { (timer) in
             GPUImageContext.sharedContextQueue().async {
                 buildFilterChain()
             }
@@ -65,34 +67,27 @@ class GPUImageDemoViewController: UIViewController {
         RunLoop.main.add(timer, forMode: .commonModes)
     }
     
-    static var index: Int = 0
+    static var currentFilterIndex: Int = 0
+    
+    var filters: [GPUImageFilter] = [
+        GPUImageFalseColorFilter(),
+        GPUImagePolkaDotFilter(),
+        GPUImageColorInvertFilter(),
+        GPUImageToonFilter(),
+        GPUImageGrayscaleFilter(),
+        GPUImagePolkaDotFilter(),
+        GPUImagePosterizeFilter(),
+        GPUImageSketchFilter(),
+        GPUImageHalftoneFilter(),
+        GPUImageBoxBlurFilter(),
+        GPUImageSepiaFilter(),
+        GPUImageHazeFilter()
+    ]
+    
     var nextFilter: GPUImageFilter {
-        var filter: GPUImageFilter
-        switch GPUImageDemoViewController.index % 10 {
-        case 0:
-            filter = GPUImageFalseColorFilter()
-        case 1:
-            filter = GPUImageGrayscaleFilter()
-        case 2:
-            filter = GPUImagePolkaDotFilter()
-        case 3:
-            filter = GPUImagePosterizeFilter()
-        case 4:
-            filter = GPUImageSketchFilter()
-        case 5:
-            filter = GPUImageHalftoneFilter()
-        case 6:
-            filter = GPUImageBoxBlurFilter()
-        case 7:
-            filter = GPUImageSepiaFilter()
-        case 8:
-            filter = GPUImageHazeFilter()
-        case 9:
-            filter = GPUImageToonFilter()
-        default:
-            filter = GPUImageColorInvertFilter()
-        }
-        GPUImageDemoViewController.index += 1
+        let index = (GPUImageDemoViewController.currentFilterIndex % self.filters.count)
+        let filter = self.filters[index]
+        GPUImageDemoViewController.currentFilterIndex += 1
         return filter
     }
     
