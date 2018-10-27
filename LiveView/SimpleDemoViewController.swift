@@ -19,12 +19,16 @@ class SimpleDemoViewController: UIViewController {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         
-        self.streamController = MotionJpegController(inView: self.view, usingView: {
+        self.streamController = MotionJpegController(withURL: URL(string: "http://192.168.1.16:8080/")!, inView: self.view, usingView: {
             return imageView
         })
         
-        self.streamController?.imageWasUpdated = { latestImage in
-            imageView.image = latestImage
+        self.streamController?.newImageData = { imageData in
+            if let latestImage = UIImage(data: imageData as Data) {                
+                DispatchQueue.main.async {
+                    imageView.image = latestImage
+                }
+            }
         }
     }
     

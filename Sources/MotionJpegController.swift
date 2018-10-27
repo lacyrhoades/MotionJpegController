@@ -12,7 +12,8 @@ import AVKit
 class MotionJpegController: NSObject {
     
     typealias LiveViewMakeAction = () -> (UIView)
-    typealias UpdateImageAction = (UIImage) -> ()
+    typealias UpdateImageAction = (Data) -> ()
+    typealias UpdateAction = (()->Void)
     
     internal enum Status {
         case stopped
@@ -21,16 +22,23 @@ class MotionJpegController: NSObject {
         case retrying
     }
     
-    fileprivate var session: Foundation.URLSession!
+    fileprivate var streamURL: URL!
     fileprivate var liveView: UIView!
     fileprivate var errorView: UIView!
     
-    public var imageWasUpdated: UpdateImageAction?
+    fileprivate var session: Foundation.URLSession!
     
-    public init(inView superview: UIView, usingView: LiveViewMakeAction, usingErrorView: LiveViewMakeAction? = nil) {
+    public var newImageData: UpdateImageAction?
+    public var didStartLoading: UpdateAction?
+    public var willRetryLoading: UpdateAction?
+    public var didFinishLoading: UpdateAction?
+    
+    public init(withURL: URL, inView superview: UIView, usingView: LiveViewMakeAction, usingErrorView: LiveViewMakeAction? = nil) {
         super.init()
         
-        self.session = Foundation.URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil)
+        session = Foundation.URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil)
+        
+        streamURL = withURL
         
         liveView = usingView()
         liveView.translatesAutoresizingMaskIntoConstraints = false
@@ -85,22 +93,15 @@ class MotionJpegController: NSObject {
         self.stop()
     }
 
-    internal var receivedData: NSMutableData?
+    fileprivate var receivedData: NSMutableData?
     fileprivate var dataTask: URLSessionDataTask?
-    internal var status: Status = .stopped
+    fileprivate var status: Status = .stopped
     fileprivate var retryTimer: Timer?
     
-    open var streamURL = URL(string: "http://192.168.1.16:8080/")
-    open var authenticationHandler: ((URLAuthenticationChallenge) -> (Foundation.URLSession.AuthChallengeDisposition, URLCredential?))?
-    open var didStartLoading: (()->Void)?
-    open var didFinishLoading: (()->Void)?
+    public var authenticationHandler: ((URLAuthenticationChallenge) -> (Foundation.URLSession.AuthChallengeDisposition, URLCredential?))?
     
     func start() {
         guard status == .stopped || status == .retrying else {
-            return
-        }
-        
-        guard let streamURL = streamURL else {
             return
         }
         
@@ -128,6 +129,8 @@ class MotionJpegController: NSObject {
         
         self.status = .retrying
         
+        DispatchQueue.main.async { self.willRetryLoading?() }
+        
         let timer = Timer(timeInterval: 1.0, repeats: false) { [unowned self] (timer) in
             self.start()
         }
@@ -136,6 +139,7 @@ class MotionJpegController: NSObject {
         
         RunLoop.main.add(timer, forMode: .commonModes)
     }
+
 }
 
 extension MotionJpegController: URLSessionDataDelegate {
@@ -240,19 +244,13 @@ extension MotionJpegController: URLSessionDataDelegate {
     
     open func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
         
-        if let imageData = receivedData , imageData.length > 0,
-            let receivedImage = UIImage(data: imageData as Data) {
-            
+        if let imageData = receivedData , imageData.length > 0 {
             if status == .loading {
                 self.hideError(self.errorView)
                 status = .playing
                 DispatchQueue.main.async { self.didFinishLoading?() }
             }
-            
-            DispatchQueue.main.async {
-                self.imageWasUpdated?(receivedImage)
-            }
-            
+            self.newImageData?(imageData as Data)
         }
         
         receivedData = NSMutableData()

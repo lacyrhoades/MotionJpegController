@@ -23,17 +23,19 @@ class GPUImageDemoViewController: UIViewController {
         let gpuPreviewView = GPUImageView()
         gpuAdapter.addTarget(gpuPreviewView)
         
-        self.streamController = MotionJpegController(inView: self.view, usingView: {
+        self.streamController = MotionJpegController(withURL: URL(string: "http://192.168.1.16:8080/")!, inView: self.view, usingView: {
             return gpuPreviewView
         })
         
-        self.streamController?.imageWasUpdated = { latestImage in
-            gpuAdapter.updateZee(latestImage)
-            gpuAdapter.notifyTargetsAboutNewOutputTexture()
+        self.streamController?.newImageData = { imageData in
+            if let latestImage = UIImage(data: imageData) {
+                gpuAdapter.update(latestImage)
+                gpuAdapter.notifyTargetsAboutNewOutputTexture()
+            }
         }
         
         var index: Int = 0
-        let timer = Timer(timeInterval: 1.5, repeats: true, block: { (timer) in
+        let timer = Timer(timeInterval: 2.0, repeats: true, block: { (timer) in
             DispatchQueue.main.async {
                 var filter: GPUImageFilter
                 switch index % 10 {
