@@ -10,5 +10,4 @@ Pod::Spec.new do |s|
   s.requires_arc = true
   s.ios.source_files = 'Source/**/*.swift'
   s.exclude_files = 'Source/**/*Test.swift'
-  s.dependency 'GPUImage'  
   end
