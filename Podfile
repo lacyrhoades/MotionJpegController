@@ -1,7 +1,0 @@
-use_frameworks!
-platform :ios, '12.0'
-
-target 'LiveView' do
-pod 'GPUImage', :path => '../GPUImage'
-pod 'MotionJpegController', :path => './'
-end

@@ -3,19 +3,19 @@ PODS:
   - MotionJpegController (1.0)
 
 DEPENDENCIES:
-  - GPUImage (from `../GPUImage`)
-  - MotionJpegController (from `./`)
+  - GPUImage (from `../../GPUImage`)
+  - MotionJpegController (from `../`)
 
 EXTERNAL SOURCES:
   GPUImage:
-    :path: "../GPUImage"
+    :path: "../../GPUImage"
   MotionJpegController:
-    :path: "./"
+    :path: "../"
 
 SPEC CHECKSUMS:
   GPUImage: 00695405fe608c03fc02b3deb46847767bc68b7b
   MotionJpegController: 6e7fc10bdc79c889c35610fbb5299a825e70c5e7
 
-PODFILE CHECKSUM: 3de37c872560c14adbb8ee786778268b7e0a0bdf
+PODFILE CHECKSUM: 57b354599dad228b9d31824ed57eaf0707cf68be
 
 COCOAPODS: 1.5.3
