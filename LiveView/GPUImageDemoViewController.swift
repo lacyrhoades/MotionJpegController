@@ -7,12 +7,13 @@
 //
 
 import UIKit
+import MotionJpegController
 import GPUImage
 
 class GPUImageDemoViewController: UIViewController {
     
     var streamController: MotionJpegController?
-    var orientation = UIImageOrientation.up
+    var orientation = UIImage.Orientation.up
     
     override func viewDidLoad() {
         
@@ -20,7 +21,7 @@ class GPUImageDemoViewController: UIViewController {
         
         view.backgroundColor = .black
         
-        let gpuAdapter = GPUImageMotionJpeg()
+        let gpuAdapter = GPUImageImageStream()
         let gpuPreviewView = GPUImageView()
         
         let buildFilterChain: () -> () = {
@@ -46,7 +47,7 @@ class GPUImageDemoViewController: UIViewController {
         
         buildFilterChain()
         
-        self.streamController = MotionJpegController(withURL: URL(string: "http://192.168.1.16:8080/")!, inView: self.view, usingView: {
+        self.streamController = MotionJpegController(withURL: URL(string: "http://192.168.2.3:8080/")!, inView: self.view, usingView: {
             return gpuPreviewView
         })
         
@@ -64,7 +65,7 @@ class GPUImageDemoViewController: UIViewController {
                 buildFilterChain()
             }
         })
-        RunLoop.main.add(timer, forMode: .commonModes)
+        RunLoop.main.add(timer, forMode: .common)
     }
     
     static var currentFilterIndex: Int = 0

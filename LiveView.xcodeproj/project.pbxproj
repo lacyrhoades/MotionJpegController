@@ -13,7 +13,6 @@
 		0FA0FC6C1F0E7C590060E1C3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0FA0FC6A1F0E7C590060E1C3 /* LaunchScreen.storyboard */; };
 		0FA0FC771F0E7C590060E1C3 /* LiveViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FA0FC761F0E7C590060E1C3 /* LiveViewTests.swift */; };
 		0FA0FC821F0E7C590060E1C3 /* LiveViewUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FA0FC811F0E7C590060E1C3 /* LiveViewUITests.swift */; };
-		0FAB438321839E6F00B82B01 /* MotionJpegController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FAB438221839E6F00B82B01 /* MotionJpegController.swift */; };
 		0FF4D4442183F45C00D6ABCE /* GPUImageDemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FF4D4432183F45C00D6ABCE /* GPUImageDemoViewController.swift */; };
 		0FF4D4462183F70200D6ABCE /* SimpleDemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FF4D4452183F70200D6ABCE /* SimpleDemoViewController.swift */; };
 		1824575C06E656E8CA383784 /* Pods_LiveView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5A2CE8C0ABA8B9CBFFD7A94 /* Pods_LiveView.framework */; };
@@ -49,7 +48,6 @@
 		0FA0FC7D1F0E7C590060E1C3 /* LiveViewUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LiveViewUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0FA0FC811F0E7C590060E1C3 /* LiveViewUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveViewUITests.swift; sourceTree = "<group>"; };
 		0FA0FC831F0E7C590060E1C3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0FAB438221839E6F00B82B01 /* MotionJpegController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionJpegController.swift; sourceTree = "<group>"; };
 		0FF4D4432183F45C00D6ABCE /* GPUImageDemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPUImageDemoViewController.swift; sourceTree = "<group>"; };
 		0FF4D4452183F70200D6ABCE /* SimpleDemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleDemoViewController.swift; sourceTree = "<group>"; };
 		5F4CF1706C8616CB82C34712 /* Pods-LiveView.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LiveView.release.xcconfig"; path = "Pods/Target Support Files/Pods-LiveView/Pods-LiveView.release.xcconfig"; sourceTree = "<group>"; };
@@ -86,7 +84,6 @@
 		0FA0FC551F0E7C590060E1C3 = {
 			isa = PBXGroup;
 			children = (
-				0FF4D4492183FC2C00D6ABCE /* Sources */,
 				0FA0FC601F0E7C590060E1C3 /* LiveView */,
 				0FA0FC751F0E7C590060E1C3 /* LiveViewTests */,
 				0FA0FC801F0E7C590060E1C3 /* LiveViewUITests */,
@@ -138,14 +135,6 @@
 			path = LiveViewUITests;
 			sourceTree = "<group>";
 		};
-		0FF4D4492183FC2C00D6ABCE /* Sources */ = {
-			isa = PBXGroup;
-			children = (
-				0FAB438221839E6F00B82B01 /* MotionJpegController.swift */,
-			);
-			path = Sources;
-			sourceTree = "<group>";
-		};
 		9B53E9DF366C5EE8D3637521 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -174,6 +163,7 @@
 				0FA0FC5A1F0E7C590060E1C3 /* Sources */,
 				0FA0FC5B1F0E7C590060E1C3 /* Frameworks */,
 				0FA0FC5C1F0E7C590060E1C3 /* Resources */,
+				0F4034D921AB236300835888 /* Hack */,
 				B556B8B3283FFFE9E000E452 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
@@ -295,6 +285,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		0F4034D921AB236300835888 /* Hack */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = Hack;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "find \"${SRCROOT}/Pods\" -type f -name *frameworks.sh -exec bash -c \"touch \\\"{}\\\"\" \\;\n";
+		};
 		597E6DCF88829A7FB0E62FD4 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -321,10 +329,12 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-LiveView/Pods-LiveView-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/GPUImage/GPUImage.framework",
+				"${BUILT_PRODUCTS_DIR}/MotionJpegController/MotionJpegController.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GPUImage.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MotionJpegController.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -340,7 +350,6 @@
 			files = (
 				0FF4D4442183F45C00D6ABCE /* GPUImageDemoViewController.swift in Sources */,
 				0FA0FC641F0E7C590060E1C3 /* ViewController.swift in Sources */,
-				0FAB438321839E6F00B82B01 /* MotionJpegController.swift in Sources */,
 				0FF4D4462183F70200D6ABCE /* SimpleDemoViewController.swift in Sources */,
 				0FA0FC621F0E7C590060E1C3 /* AppDelegate.swift in Sources */,
 			);
@@ -430,7 +439,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -475,7 +484,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -491,10 +500,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = HZT822U3RS;
 				INFOPLIST_FILE = LiveView/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = net.colordeaf.LiveView;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -505,10 +515,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = HZT822U3RS;
 				INFOPLIST_FILE = LiveView/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = net.colordeaf.LiveView;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};

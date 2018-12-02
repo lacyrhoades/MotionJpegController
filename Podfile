@@ -1,7 +1,7 @@
 use_frameworks!
-platform :ios, '10.0'
-swift_version = '3.0'
+platform :ios, '12.0'
 
 target 'LiveView' do
 pod 'GPUImage', :path => '../GPUImage'
+pod 'MotionJpegController', :path => './'
 end

@@ -7,10 +7,11 @@
 //
 
 import UIKit
+import MotionJpegController
 
 class SimpleDemoViewController: UIViewController {
     var streamController: MotionJpegController?
-    var orientation = UIImageOrientation.up
+    var orientation = UIImage.Orientation.up
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,7 +21,19 @@ class SimpleDemoViewController: UIViewController {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         
-        self.streamController = MotionJpegController(withURL: URL(string: "http://192.168.1.16:8080/")!, inView: self.view, usingView: {
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(imageView)
+        
+        NSLayoutConstraint.activate(
+            [
+                NSLayoutConstraint(item: imageView, attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 0),
+                NSLayoutConstraint(item: imageView, attribute: .trailing, relatedBy: .equal, toItem: view, attribute: .trailing, multiplier: 1, constant: 0),
+                NSLayoutConstraint(item: imageView, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1, constant: 0),
+                NSLayoutConstraint(item: imageView, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1, constant: 0)
+            ]
+        )
+        
+        self.streamController = MotionJpegController(withURL: URL(string: "http://192.168.2.3:8080/")!, inView: self.view, usingView: {
             return imageView
         })
         
