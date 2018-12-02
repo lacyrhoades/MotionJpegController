@@ -8,6 +8,8 @@
 
 import UIKit
 
+let streamURL = URL(string: "http://192.168.2.3:8080/")!
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 

@@ -33,9 +33,7 @@ class SimpleDemoViewController: UIViewController {
             ]
         )
         
-        self.streamController = MotionJpegController(withURL: URL(string: "http://192.168.2.3:8080/")!, inView: self.view, usingView: {
-            return imageView
-        })
+        self.streamController = MotionJpegController(withURL: streamURL)
         
         self.streamController?.newImageData = { imageData in
             if let latestImage = UIImage(data: imageData)?.cgImage {
