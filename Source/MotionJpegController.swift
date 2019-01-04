@@ -22,7 +22,7 @@ public class MotionJpegController: NSObject {
         case retrying
     }
     
-    fileprivate var streamURL: URL!
+    public var streamURL: URL!
     
     fileprivate var session: Foundation.URLSession!
     
@@ -61,7 +61,7 @@ public class MotionJpegController: NSObject {
 
     fileprivate var receivedData: NSMutableData?
     fileprivate var dataTask: URLSessionDataTask?
-    fileprivate var status: Status = .stopped
+    var status: Status = .stopped
     fileprivate var retryTimer: Timer?
     
     public var authenticationHandler: ((URLAuthenticationChallenge) -> (Foundation.URLSession.AuthChallengeDisposition, URLCredential?))?

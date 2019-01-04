@@ -10,30 +10,43 @@ public class MotionJpegStreamView: UIView {
     public var didStopStreaming: (() -> ())? = nil
     public var streamDidError: (() -> ())? = nil
     
-    private let imageView: UIImageView = {
-        let view = UIImageView()
-        view.contentMode = .scaleAspectFit
-        return view
-    }()
-    
     let errorView: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = .black
         view.alpha = 0.5
         return view
     }()
     
-    public init() {
+    let debugLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .white
+        label.textAlignment = .center
+        label.font = UIFont.systemFont(ofSize: 28.0)
+        return label
+    }()
+    
+    var imageView: UIView
+    public var imageDidUpdate: ((UIImage) -> ())?
+    
+    public init(withView subview: UIView) {
+        self.imageView = subview
         super.init(frame: .zero)
         self.setup()
     }
     
     required public init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        self.setup()
+        fatalError()
+    }
+    
+    public func showError(_ text: String) {
+        DispatchQueue.main.async {
+            self.debugLabel.text = text
+        }
     }
     
     func setup() {
+        self.backgroundColor = .clear
+        
         imageView.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(imageView)
         
@@ -57,23 +70,44 @@ public class MotionJpegStreamView: UIView {
                 NSLayoutConstraint(item: errorView, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1, constant: 0)
             ]
         )
+        
+        debugLabel.alpha = 0.5
+        debugLabel.text = "Uninitialized"
+        debugLabel.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(debugLabel)
+        
+        NSLayoutConstraint.activate(
+            [
+                NSLayoutConstraint(item: debugLabel, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1, constant: 0),
+                NSLayoutConstraint(item: debugLabel, attribute: .height, relatedBy: .equal, toItem: self, attribute: .height, multiplier: 0.3, constant: 0),
+                NSLayoutConstraint(item: debugLabel, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1, constant: 0),
+                NSLayoutConstraint(item: debugLabel, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1, constant: 0)
+            ]
+        )
     }
     
-    public func startStream(from: URL) {
+    public func stream(from: URL) {
+        if motionJpegController?.streamURL == from {
+            motionJpegController?.start()
+            return
+        }
+        
         motionJpegController?.stop()
         
         motionJpegController = MotionJpegController(withURL: from)
         
         motionJpegController?.newImageData = { imageData in
             DispatchQueue.main.async {
-                self.backgroundColor = self.backgroundColor == .darkGray ? .black : .darkGray
-                self.errorView.isHidden = true
+                self.debugLabel.text = "Streaming"
+                UIView.animate(withDuration: 0.3, animations: {
+                    self.errorView.alpha = 0.0
+                })
             }
             
             DispatchQueue.global().async {
                 if let newImage = UIImage(data: imageData as Data) {
                     DispatchQueue.main.async {
-                        self.imageView.image = newImage
+                        self.imageDidUpdate?(newImage)
                     }
                 }
             }
@@ -81,7 +115,10 @@ public class MotionJpegStreamView: UIView {
         
         motionJpegController?.willRetryLoading = { retryCount in
             DispatchQueue.main.async {
-                self.errorView.isHidden = false
+                self.debugLabel.text = "Error?"
+                UIView.animate(withDuration: 0.3, animations: {
+                    self.errorView.alpha = 0.5
+                })
             }
             
             if retryCount > 5 {
@@ -90,6 +127,7 @@ public class MotionJpegStreamView: UIView {
         }
         
         motionJpegController?.didFinishLoading = {
+            self.debugLabel.text = "Streaming"
             self.didStartStreaming?()
         }
         
@@ -99,7 +137,7 @@ public class MotionJpegStreamView: UIView {
     public func stopStream() {
         motionJpegController?.stop()
         DispatchQueue.main.async {
-            self.imageView.image = nil
+            self.debugLabel.text = "Stopped"
             self.didStopStreaming?()
         }
     }
