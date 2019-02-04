@@ -22,6 +22,7 @@ public class MotionJpegStreamView: UIView {
         label.textColor = .white
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 28.0)
+        label.alpha = 0.5
         return label
     }()
     
@@ -71,16 +72,13 @@ public class MotionJpegStreamView: UIView {
             ]
         )
         
-        debugLabel.alpha = 0.5
-        debugLabel.text = "Uninitialized"
+        debugLabel.text = "Uninitialized Motion JPEG Streaming View"
         debugLabel.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(debugLabel)
         
         NSLayoutConstraint.activate(
             [
                 NSLayoutConstraint(item: debugLabel, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1, constant: 0),
-                NSLayoutConstraint(item: debugLabel, attribute: .height, relatedBy: .equal, toItem: self, attribute: .height, multiplier: 0.3, constant: 0),
-                NSLayoutConstraint(item: debugLabel, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1, constant: 0),
                 NSLayoutConstraint(item: debugLabel, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1, constant: 0)
             ]
         )
@@ -115,7 +113,7 @@ public class MotionJpegStreamView: UIView {
         
         motionJpegController?.willRetryLoading = { retryCount in
             DispatchQueue.main.async {
-                self.debugLabel.text = "Error?"
+                self.debugLabel.text = "Paused"
                 UIView.animate(withDuration: 0.3, animations: {
                     self.errorView.alpha = 0.5
                 })
