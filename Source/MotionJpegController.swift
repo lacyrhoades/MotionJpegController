@@ -24,8 +24,6 @@ public class MotionJpegController: NSObject {
     
     public var streamURL: URL!
     
-    fileprivate var session: Foundation.URLSession!
-    
     public var newImageData: UpdateImageAction?
     public var didStartLoading: UpdateAction?
     public var willRetryLoading: RetryAction?
@@ -34,7 +32,7 @@ public class MotionJpegController: NSObject {
     public init(withURL: URL) {
         super.init()
         
-        session = Foundation.URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil)
+        print("MotionJpegController", "init")
         
         streamURL = withURL
     }
@@ -56,6 +54,7 @@ public class MotionJpegController: NSObject {
     }
     
     deinit {
+        print("MotionJpegController", "deinit")
         self.stop()
     }
 
@@ -63,6 +62,17 @@ public class MotionJpegController: NSObject {
     fileprivate var dataTask: URLSessionDataTask?
     var status: Status = .stopped
     fileprivate var retryTimer: Timer?
+    
+    public var isStopped: Bool {
+        switch status {
+        case .stopped:
+            return true
+        case .retrying:
+            return true
+        default:
+            return false
+        }
+    }
     
     public var authenticationHandler: ((URLAuthenticationChallenge) -> (Foundation.URLSession.AuthChallengeDisposition, URLCredential?))?
     
@@ -78,8 +88,11 @@ public class MotionJpegController: NSObject {
         receivedData = NSMutableData()
         var request = URLRequest(url: streamURL)
         request.timeoutInterval = 5.0
+        let session = Foundation.URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil)
         dataTask = session.dataTask(with: request)
+        dataTask?.priority = 1.0
         dataTask?.resume()
+        session.finishTasksAndInvalidate()
     }
     
     public func stop() {
@@ -140,9 +153,9 @@ extension MotionJpegController: URLSessionDataDelegate {
     
     open func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         
-        guard session == self.session, task == self.dataTask else {
+        guard task == self.dataTask else {
+            print("Unknown task failed with error")
             assert(false)
-            print("Unknown session / task failed with error")
             return
         }
         
