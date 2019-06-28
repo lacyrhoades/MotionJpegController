@@ -139,7 +139,9 @@ extension MotionJpegController: URLSessionDataDelegate {
                 status = .playing
                 DispatchQueue.main.async { self.didFinishLoading?() }
             }
-            self.newImageData?(imageData as Data)
+            DispatchQueue.main.async {
+                self.newImageData?(imageData as Data)
+            }
         }
         
         receivedData = NSMutableData()
@@ -171,6 +173,9 @@ extension MotionJpegController: URLSessionDataDelegate {
             case URLError.Code.cannotConnectToHost:
                 print("Cannot connect to host")
                 self.retry()
+            case URLError.Code.networkConnectionLost:
+                print("Network connection lost")
+                self.stop()
             case URLError.Code.cancelled:
                 print("Data task cancelled")
                 break
